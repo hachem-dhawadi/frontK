@@ -1,0 +1,72 @@
+<div class="container">
+    <h1>Gestion des Livraisons</h1>
+
+    <!-- Toggle the form visibility -->
+    <button (click)="toggleForm()" class="btn-toggle-form">{{ showForm ? 'Hide Form' : 'Add New Livraison' }}</button>
+
+    <!-- Display List of Livraisons -->
+    <div class="table-container">
+        <table class="livraison-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Status</th>
+                    <th>Order Date</th>
+                    <th>Commande ID</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let liv of livraisons">
+                    <td>{{ liv.id }}</td>
+                    <td>{{ liv.statusl }}</td>
+                    <td>{{ liv.orderdate | date: 'short' }}</td>
+                    <td>{{ liv.commande?.idcommande }}</td>
+                    <td>
+                        <button (click)="editLivraison(liv)" class="btn-edit">Edit</button>
+                        <button (click)="deleteLivraison(liv.id)" class="btn-delete">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Form for Adding or Updating a Livraison -->
+    <div class="form-container" *ngIf="showForm">
+        <h2>{{ isEditing ? 'Edit Livraison' : 'Add New Livraison' }}</h2>
+        <form #livraisonForm="ngForm" (ngSubmit)="onSubmit()">
+
+            <!-- Status Field -->
+            <div class="form-group">
+                <label for="statusl">Status:</label>
+                <select id="statusl" name="statusl" [(ngModel)]="livraison.statusl" required>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Returned">Returned</option>
+                </select>
+            </div>
+
+            <!-- Order Date Field -->
+            <div class="form-group">
+                <label for="orderdate">Order Date:</label>
+                <input type="datetime-local" id="orderdate" name="orderdate" [(ngModel)]="livraison.orderdate" required>
+            </div>
+
+            <!-- Commande ID Field -->
+            <div class="form-group">
+                <label for="idcommande">Commande ID:</label>
+                <select id="idcommande" name="idcommande" [(ngModel)]="livraison.commande.idcommande" required>
+                    <option *ngFor="let cmd of commandes" [value]="cmd.idcommande">
+                        {{ cmd.idcommande }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">{{ isEditing ? 'Update' : 'Add' }} Livraison</button>
+                <button type="button" (click)="cancelForm()" class="btn-cancel">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,153 @@
+<div class="container">
+    <h1>Product Management</h1>
+
+    <button (click)="toggleForm()" class="btn-toggle-form" [disabled]="isLoading">
+        {{ showForm ? 'Hide Form' : 'Add New Product' }}
+    </button>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Product List Table -->
+    <div class="table-container">
+        <table class="commande-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Brand</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Discount</th>
+                    <th>Active</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let product of products">
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.brand }}</td>
+                    <td>${{ product.price | number:'1.2-2' }}</td>
+                    <td>{{ product.stockQuantity }}</td>
+                    <td>{{ product.discountPercentage }}%</td>
+                    <td>{{ product.isActive ? 'Yes' : 'No' }}</td>
+                    <td>
+                        <img *ngIf="product.imageUrl" 
+                             [src]="'http://localhost:8089/' + product.imageUrl" 
+                             class="product-image" 
+                             alt="Product image">
+                    </td>
+                    <td>
+                        <button (click)="loadProductById(product.id!)" class="btn-edit" [disabled]="isLoading">Edit</button>
+                        <button (click)="deleteProduct(product.id!)" class="btn-delete" [disabled]="isLoading">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Product Form -->
+    <div class="form-container" *ngIf="showForm">
+        <h2>{{ selectedProductId ? 'Edit Product' : 'Create Product' }}</h2>
+        <form [formGroup]="productForm" (ngSubmit)="selectedProductId ? updateSelectedProduct() : createProduct()">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Product Name:</label>
+                    <input type="text" id="name" formControlName="name">
+                    <div class="error-message" *ngIf="hasError('name', 'required')">
+                        Product Name is required
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="brand">Brand:</label>
+                    <input type="text" id="brand" formControlName="brand">
+                    <div class="error-message" *ngIf="hasError('brand', 'required')">
+                        Brand is required
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" formControlName="description"></textarea>
+                <div class="error-message" *ngIf="hasError('description', 'required')">
+                    Description is required
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="price">Price:</label>
+                    <input type="number" step="0.01" formControlName="price">
+                    <div class="error-message" *ngIf="hasError('price', 'min')">
+                        Minimum price is $0.01
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="stock">Stock Quantity:</label>
+                    <input type="number" formControlName="stockQuantity">
+                    <div class="error-message" *ngIf="hasError('stockQuantity', 'min')">
+                        Stock cannot be negative
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="sku">SKU:</label>
+                    <input type="text" formControlName="sku">
+                    <div class="error-message" *ngIf="hasError('sku', 'required')">
+                        SKU is required
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="discount">Discount (%):</label>
+                    <input type="number" step="0.1" formControlName="discountPercentage">
+                    <div class="error-message" *ngIf="hasError('discountPercentage', 'min')">
+                        Discount cannot be negative
+                    </div>
+                    <div class="error-message" *ngIf="hasError('discountPercentage', 'max')">
+                        Discount cannot exceed 100%
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group checkbox-group">
+                    <label for="active">Active:</label>
+                    <input type="checkbox" formControlName="isActive">
+                </div>
+                <div class="form-group">
+                    <label for="imageUrl">Image URL:</label>
+                    <div class="file-upload-group">
+                        <input type="text" id="imageUrl" formControlName="imageUrl" readonly>
+                        <div class="error-message" *ngIf="hasError('imageUrl', 'required')">
+                            Image is required
+                        </div>
+                        <div class="upload-controls">
+                            <input type="file" id="fileInput" 
+                                   (change)="onFileSelected($event)" 
+                                   style="display: none;"
+                                   accept="image/*">
+                            <label for="fileInput" class="btn-edit">Choose File</label>
+                            <button type="button" (click)="uploadImage()" 
+                                    class="btn-submit" 
+                                    [disabled]="!selectedFile || isLoading">
+                                Upload
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!-- Change the submit button to remove the invalid check -->
+<div class="form-actions">
+    <button type="submit" class="btn-submit" [disabled]="isLoading">
+        {{ isLoading ? 'Processing...' : (selectedProductId ? 'Update' : 'Create') }}
+    </button>
+    <button type="button" (click)="cancelForm()" class="btn-cancel">Cancel</button>
+</div>
+        </form>
+    </div>
+</div>

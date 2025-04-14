@@ -1,0 +1,66 @@
+<div class="container">
+    <h1>Commandes List</h1>
+
+    <button (click)="toggleForm()" class="btn-toggle-form">{{ showForm ? 'Hide Form' : 'Add New Commande' }}</button>
+
+    <!-- Display List of Commandes -->
+    <div class="table-container">
+        <table class="commande-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Details</th>
+                    <th>Order Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let commande of commandes">
+                    <td>{{ commande.idcommande }}</td>
+                    <td>{{ commande.details }}</td>
+                    <td>{{ commande.orderdate }}</td>
+                    <td>{{ commande.status }}</td>
+                    <td>
+                        <button (click)="editCommande(commande)" class="btn-edit">Edit</button>
+                        <button (click)="onDeleteCommande(commande.idcommande)" class="btn-delete">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Form for Adding or Updating a Commande -->
+    <div class="form-container" *ngIf="showForm">
+        <h2>{{ selectedCommande ? 'Edit Commande' : 'Add New Commande' }}</h2>
+        <form #commandeForm="ngForm" (ngSubmit)="onSubmit()">
+
+            <!-- Details Field -->
+            <div class="form-group">
+                <label for="details">Details:</label>
+                <input type="text" id="details" name="details" [(ngModel)]="formCommande.details" required>
+            </div>
+
+            <!-- Order Date Field -->
+            <div class="form-group">
+                <label for="orderdate">Order Date:</label>
+                <input type="date" id="orderdate" name="orderdate" [(ngModel)]="formCommande.orderdate" required>
+            </div>
+
+            <!-- Status Field -->
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select id="status" name="status" [(ngModel)]="formCommande.status" required>
+                    <option value="Pending">Pending</option>
+                    <option value="Processed">Processed</option>
+                    <option value="Shipped">Shipped</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">{{ selectedCommande ? 'Update' : 'Add' }} Commande</button>
+                <button type="button" (click)="cancelForm()" class="btn-cancel">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
